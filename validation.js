@@ -19,3 +19,7 @@ export const postCreateValidation = [
     body('tags', 'неверный формат тегов (укажите массив)').optional(),
     body('imageUrl', 'неверная ссылка на изображение').optional().isString(),
 ];
+
+export const commentCreateValidation = [
+    body('text', 'комментарий должен иметь минимум 3 символа').isLength({min: 3}).isString()
+];

@@ -2,9 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import multer from 'multer';
 import cors from 'cors'
-import { registerValidation, loginValidation, postCreateValidation } from './validation.js';
+import { registerValidation, loginValidation, postCreateValidation, commentCreateValidation } from './validation.js';
 import { handleValidationErrors, checkAuth } from './utils/index.js'
-import { UserController, PostController } from './controllers/index.js'
+import { UserController, PostController, CommentController } from './controllers/index.js'
 import { getLastTags } from './controllers/PostController.js';
 
 
@@ -34,14 +34,22 @@ app.post('/auth/login', loginValidation, handleValidationErrors, UserController.
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
 app.get('/auth/me', checkAuth, UserController.getMe);
 
+// app.post('/comments', checkAuth, commentCreateValidation, handleValidationErrors, CommentController.create);
+// app.get('/comments', CommentController.getAll);
+
 app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
     res.json({
         url: `/uploads/${req.file.originalname}`
     })
 });
 
+app.get('/comments', PostController.getLastComments);
+app.post('/comments/:id', checkAuth, PostController.createComment);
+
 app.get('/tags', PostController.getLastTags)
+app.get('/tags/:name', PostController.sortByTag);
 app.get('/posts', PostController.getAll);
+app.get('/posts/popular', PostController.getAllPopulate);
 app.get('/posts/tags', PostController.getLastTags);
 app.get('/posts/:id', PostController.getOne);
 app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create);
